@@ -24,10 +24,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 |
 */
 if (isset($_SERVER['HTTP_HOST']) && $_SERVER['HTTP_HOST'] == 'localhost') {
-
-    $config['base_url'] = 'https://localhost/miniportal/';
+    $config['base_url'] = 'http://localhost/miniportal/';
 } else {
-
     $config['base_url'] = 'https://asihputera.servehttp.com:82/';
 }/*
 |--------------------------------------------------------------------------

@@ -1,95 +1,117 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <title>Login System - Mini Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@800&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <style>
-        body {
-            margin: 0; padding: 0;
-            font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #87CEEB 0%, #FFFFFF 100%);
-            height: 100vh;
-            display: flex; justify-content: center; align-items: center;
-        }
-        .login-box {
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-            width: 350px;
-            text-align: center;
-            animation: fadeInUp 0.8s ease-out;
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Style buat teks logo Mini Portal */
-        .logo-text {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 32px;
-            font-weight: 800;
-            color: #0077be; /* Biru sesuai request */
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0, 119, 190, 0.2); /* Shadow tipis biar hidup */
-        }
+    <title>Portal Yayasan Asih Putera</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        /* Style teks LOGIN disesuaikan biar nggak balapan sama logo */
-        h2 { 
-            color: #777; 
-            font-size: 16px;
-            font-weight: 400;
-            margin-top: 0;
-            margin-bottom: 30px; 
-            letter-spacing: 2px;
-        }
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <!-- Pastikan path CSS bawaan template lu bener -->
+    <link rel="stylesheet" href="<?= base_url('assets/plugins/login-form-20/css/style.css'); ?>">
 
-        input {
-            width: 100%;
-            padding: 12px 15px;
-            margin: 10px 0;
-            display: inline-block;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            box-sizing: border-box;
-            outline: none;
-            transition: 0.3s;
-        }
-        input:focus { border-color: #87CEEB; box-shadow: 0 0 8px rgba(135,206,235,0.5); }
-        button {
-            width: 100%;
-            background-color: #0077be;
-            color: white;
-            padding: 12px;
-            margin: 20px 0 10px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-        button:hover { background-color: #005f99; transform: translateY(-2px); }
-        .error-msg { color: #ff4d4d; font-size: 13px; margin-bottom: 10px; }
-    </style>
+    <!-- Tambahan GSAP buat Animasi Smooth -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
 </head>
-<body>
-    <div class="login-box">
-        <div class="logo-text">Mini Portal</div>
-        <h2>LOGIN</h2>
-        
-        <?php if($this->session->flashdata('error')): ?>
-            <div class="error-msg"><?= $this->session->flashdata('error'); ?></div>
-        <?php endif; ?>
-        
-        <form action="<?= base_url('auth/login_process'); ?>" method="post">
-            <input type="text" name="username" placeholder="Username" required autofocus>
-            <input type="password" name="password" placeholder="Password" required>
-            <button type="submit">MASUK</button>
-        </form>
+<!-- Hapus js-fullheight bawaan, kita ganti pake class Flexbox Bootstrap aja -->
+<body class="img" style="background-image: url('<?= base_url('assets/images/snapedit_1724307822281.jpeg'); ?>'); background-size: cover; background-position: center; background-attachment: fixed;">
+    
+    <!-- FIX CENTER MIDDLE: Pake min-vh-100, d-flex, align-items-center -->
+    <section class="min-vh-100 d-flex align-items-center justify-content-center">
+        <div class="container">
+            
+            <!-- Bagian Logo -->
+            <div class="row justify-content-center">
+                <div class="col-md-6 text-center mb-4 gsap-logo">
+                    <img src="<?= base_url('assets/images/aplogo.png'); ?>" alt="Logo Asih Putera" class="img-fluid w-50">
+                </div>
+            </div>
+
+            <!-- Bagian Form -->
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-4">
+                    <div class="login-wrap p-0">
+                        <h4 class="mb-4 text-center gsap-item" style="color:white; font-weight: 600;">&mdash; MiniPortal YAP &mdash;</h4>
+                        
+                        <!-- Form Login -->
+                        <form action="<?= base_url('auth/login_process'); ?>" method="post" class="signin-form">
+                            
+                            <div class="form-group gsap-item">
+                                <input type="text" class="form-control" placeholder="Username" name="username" required autofocus>
+                            </div>
+                            
+                            <div class="form-group gsap-item">
+                                <input id="password-field" type="password" class="form-control" placeholder="Password" name="password" required>
+                                <span toggle="#password-field" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                            </div>
+                            
+                            <div class="form-group mt-4 gsap-item">
+                                <!-- Efek hover di CSS bawaan mungkin perlu disesuaikan kalau nabrak, tapi styling lu ini udah clean -->
+                                <button type="submit" class="form-control btn btn-primary submit px-3" style="background: white !important; border: 1px solid white !important; color: #000 !important; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">Sign In</button>
+                            </div>
+                            
+                            <!-- Link Bantuan -->
+                            <div class="form-group d-flex justify-content-center mt-3 gsap-item">
+                                <a href="#" data-toggle="modal" data-target="#helpModal" style="color: #fff; text-decoration: underline; font-size: 14px;">Mengalami Kendala?</a>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Bantuan -->
+    <div class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="helpModalLabel" style="color: #333; font-weight: bold;">Bantuan Login</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" style="color: #555; text-align: justify; line-height: 1.6;">
+                    Username dan Password yang digunakan didapat dari tim IT YAP, hubungi tim jika ingin mendaftarkan user!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    
+    <!-- Script bawaan template login lu -->
+    <script src="<?= base_url('assets/plugins/login-form-20/js/main.js'); ?>"></script>
+
+    <!-- Animasi GSAP -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Animasi logo turun dari atas
+            gsap.from(".gsap-logo", { 
+                y: -40, 
+                opacity: 0, 
+                duration: 1, 
+                ease: "power3.out" 
+            });
+
+            // Animasi input dan tombol muncul berurutan dari bawah
+            gsap.from(".gsap-item", { 
+                y: 30, 
+                opacity: 0, 
+                duration: 0.8, 
+                stagger: 0.15, // Jeda antar elemen
+                ease: "power3.out",
+                delay: 0.3 // Nunggu logo selesai turun dikit baru jalan
+            });
+        });
+    </script>
 </body>
 </html>
