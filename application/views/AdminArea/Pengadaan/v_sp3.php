@@ -4,7 +4,6 @@
     $default_akhir = date('Y-m-d');
 ?>
 
-<!-- Garis & Header -->
 <div class="row fade-in-up">
     <div class="col-sm-12">
         <hr class="mt-0 mb-3 custom-hr">
@@ -14,7 +13,6 @@
     </div>
 </div>
 
-<!-- Filter Box Compact (Z-Index di-set tinggi biar dropdown ngambang) -->
 <div class="card-sp3 fade-in-up delay-1" style="position: relative; z-index: 99; overflow: visible !important;">
     <div class="row align-items-end g-3">
         <div class="col-lg-3 col-md-6">
@@ -47,7 +45,6 @@
     </div>
 </div>
 
-<!-- Table Box -->
 <div class="card-sp3 fade-in-up delay-2" style="position: relative; z-index: 1; min-height: 400px;">
     <div class="table-responsive pt-2" style="overflow-x: visible;">
         <table id="tableSp3" class="table table-hover display nowrap" style="width:100%">
@@ -67,7 +64,6 @@
 
 <script>
     $(document).ready(function() {
-        
         const localeId = {
             days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
             daysShort: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],

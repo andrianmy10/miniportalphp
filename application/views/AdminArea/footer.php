@@ -6,9 +6,8 @@
                     </span>
                 </div>
             </footer>
-
         </div> 
-        </div> 
+    </div> 
 </div> 
 
 <script src="<?= base_url('assets/plugins/adminarea/template/vendors/js/vendor.bundle.base.js') ?>"></script>
@@ -26,7 +25,6 @@
 <script src="https://cdn.jsdelivr.net/npm/air-datepicker@3.3.5/air-datepicker.min.js"></script>
 
 <script>
-    // --- JAM DIGITAL & TANGGAL INDONESIA ---
     function updateClock() {
         const days = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
         const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -43,42 +41,49 @@
         
         const timeString = `${h}.${m}.${s} | ${dayName}, ${date} ${monthName} ${year}`;
         
-        const clockEl = document.getElementById('realtime-clock');
-        if (clockEl) clockEl.innerText = timeString;
+        const clockEls = document.querySelectorAll('.realtime-clock');
+        clockEls.forEach(el => el.innerText = timeString);
     }
     setInterval(updateClock, 1000);
     updateClock(); 
 
-    // --- DARK MODE TOGGLE & AVATAR SWAP ---
-    const themeToggleBtn = document.getElementById('theme-toggle');
-    const themeIcon = document.getElementById('theme-icon');
+    const themeToggleBtns = document.querySelectorAll('.theme-toggle-btn');
+    const themeIcons = document.querySelectorAll('.theme-icon');
     const body = document.body;
     
     const avatars = document.querySelectorAll('.profile-avatar');
-    const userName = "<?= urlencode($this->session->userdata('username')); ?>";
+    const userName = "<?= urlencode($this->session->userdata('nama_asli')); ?>";
 
     function applyThemeChanges(isDark) {
-        if (isDark) {
-            themeIcon.classList.replace('fa-moon', 'fa-sun'); 
-            themeIcon.classList.replace('text-primary', 'text-warning'); 
-            avatars.forEach(img => img.src = `https://ui-avatars.com/api/?name=${userName}&background=ffffff&color=1e3a8a&bold=true`);
-        } else {
-            themeIcon.classList.replace('fa-sun', 'fa-moon'); 
-            themeIcon.classList.replace('text-warning', 'text-primary'); 
-            avatars.forEach(img => img.src = `https://ui-avatars.com/api/?name=${userName}&background=1e3a8a&color=fff&bold=true`);
-        }
+        themeIcons.forEach(icon => {
+            if (isDark) {
+                icon.classList.replace('fa-moon', 'fa-sun'); 
+                icon.classList.replace('text-primary', 'text-warning'); 
+            } else {
+                icon.classList.replace('fa-sun', 'fa-moon'); 
+                icon.classList.replace('text-warning', 'text-primary'); 
+            }
+        });
+
+        avatars.forEach(img => {
+            if (isDark) {
+                img.src = `https://ui-avatars.com/api/?name=${userName}&background=ffffff&color=1e3a8a&bold=true`;
+            } else {
+                img.src = `https://ui-avatars.com/api/?name=${userName}&background=1e3a8a&color=fff&bold=true`;
+            }
+        });
     }
 
     applyThemeChanges(body.classList.contains('dark-mode'));
 
-    themeToggleBtn.addEventListener('click', () => {
-        body.classList.toggle('dark-mode');
-        const isDark = body.classList.contains('dark-mode');
-        
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        applyThemeChanges(isDark); 
+    themeToggleBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            body.classList.toggle('dark-mode');
+            const isDark = body.classList.contains('dark-mode');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+            applyThemeChanges(isDark); 
+        });
     });
 </script>
-
 </body>
 </html>

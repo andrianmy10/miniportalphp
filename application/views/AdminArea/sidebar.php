@@ -1,11 +1,26 @@
-<!-- SIDEBAR -->
-        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+<nav class="sidebar sidebar-offcanvas" id="sidebar">
             <ul class="nav">
+                
+                <li class="nav-item d-lg-none pt-3 pb-2 px-3 border-bottom mb-2">
+                    <h3 class="fw-bold text-primary m-0" style="font-family: 'Poppins', sans-serif;">MiniPortal</h3>
+                    <p class="text-muted small mt-1 mb-0">Hi, <?= $this->session->userdata('nama_lengkap'); ?></p>
+                </li>
+                
+                <li class="nav-item">
+                    <?php 
+                        $dash_url = ($this->session->userdata('nama_group') == 'Pengadaan') ? 'pengadaan/dashboard' : 'keuangan/dashboard';
+                    ?>
+                    <a class="nav-link" href="<?= base_url($dash_url) ?>">
+                        <i class="mdi mdi-grid-large menu-icon"></i>
+                        <span class="menu-title">Dashboard</span>
+                    </a>
+                </li>
+                
                 <li class="nav-item nav-category" style="margin-top: 10px;">Menu Utama</li>
 
                 <?php if($this->session->userdata('nama_group') == 'Pengadaan'): ?>
                 <li class="nav-item">
-                    <a class="nav-link" href="<?= base_url('pengadaan') ?>">
+                    <a class="nav-link" href="<?= base_url('pengadaan/sp3') ?>">
                         <i class="menu-icon mdi mdi-file-document-outline"></i>
                         <span class="menu-title">Daftar SP3</span>
                     </a>
@@ -14,20 +29,42 @@
 
                 <?php if($this->session->userdata('nama_group') == 'Keuangan'): ?>
                 <li class="nav-item">
-                    <a class="nav-link" data-bs-toggle="collapse" href="#keuangan-menu" aria-expanded="false" aria-controls="keuangan-menu">
-                        <i class="menu-icon mdi mdi-cash-multiple"></i>
-                        <span class="menu-title">Keuangan</span>
-                        <i class="menu-arrow"></i>
+                    <a class="nav-link" href="<?= base_url('keuangan/jurnalumum') ?>">
+                        <i class="menu-icon mdi mdi-book-open-page-variant"></i>
+                        <span class="menu-title">Jurnal Umum</span>
                     </a>
-                    <div class="collapse" id="keuangan-menu">
-                        <ul class="nav flex-column sub-menu">
-                            <li class="nav-item"><a class="nav-link" href="#">Jurnal Umum</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Jurnal Pendapatan</a></li>
-                            <li class="nav-item"><a class="nav-link" href="#">Tunggakan</a></li>
-                        </ul>
-                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= base_url('keuangan/jurnalpendapatan') ?>">
+                        <i class="menu-icon mdi mdi-cash-register"></i>
+                        <span class="menu-title">Jurnal Pendapatan</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="<?= base_url('keuangan/tunggakan') ?>">
+                        <i class="menu-icon mdi mdi-alert-circle-outline text-danger"></i>
+                        <span class="menu-title">Tunggakan</span>
+                    </a>
                 </li>
                 <?php endif; ?>
+                
+                <li class="nav-item d-lg-none mt-4 pt-3 border-top w-100">
+                    <div class="px-3">
+                        <div class="clock-wrapper mb-3 p-2 rounded text-center" style="background: #eef2ff; border: 1px solid #c7d2fe;">
+                            <i class="fa-regular fa-clock text-primary mb-1 d-block" style="font-size: 18px;"></i>
+                            <span class="realtime-clock fw-bold text-primary" style="font-size: 11px;">Memuat Waktu...</span>
+                        </div>
+                        
+                        <button class="btn btn-theme-light theme-toggle-btn w-100 mb-2 d-flex justify-content-center align-items-center shadow-sm" style="height: 40px; border: 1px solid #e2e8f0; background: white;">
+                            <i class="fa-solid fa-moon text-primary theme-icon me-2"></i> Mode Layar
+                        </button>
+                        
+                        <a href="<?= base_url('auth/logout'); ?>" class="btn btn-danger w-100 d-flex justify-content-center align-items-center shadow-sm" style="height: 40px;">
+                            <i class="mdi mdi-power me-2"></i> Keluar
+                        </a>
+                    </div>
+                </li>
+
             </ul>
         </nav>
         
