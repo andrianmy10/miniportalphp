@@ -1,4 +1,9 @@
-<nav class="sidebar sidebar-offcanvas" id="sidebar">
+<?php 
+            // Ambil URL segment ke-2 (contoh: keuangan/jurnalumum -> ambil 'jurnalumum')
+            $menu_aktif = $this->uri->segment(2); 
+        ?>
+
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
             <ul class="nav">
                 
                 <li class="nav-item d-lg-none pt-3 pb-2 px-3 border-bottom mb-2">
@@ -6,7 +11,7 @@
                     <p class="text-muted small mt-1 mb-0">Hi, <?= $this->session->userdata('nama_lengkap'); ?></p>
                 </li>
                 
-                <li class="nav-item">
+                <li class="nav-item <?= ($menu_aktif == 'dashboard') ? 'active' : '' ?>">
                     <?php 
                         $dash_url = ($this->session->userdata('nama_group') == 'Pengadaan') ? 'pengadaan/dashboard' : 'keuangan/dashboard';
                     ?>
@@ -19,7 +24,7 @@
                 <li class="nav-item nav-category" style="margin-top: 10px;">Menu Utama</li>
 
                 <?php if($this->session->userdata('nama_group') == 'Pengadaan'): ?>
-                <li class="nav-item">
+                <li class="nav-item <?= ($menu_aktif == 'sp3') ? 'active' : '' ?>">
                     <a class="nav-link" href="<?= base_url('pengadaan/sp3') ?>">
                         <i class="menu-icon mdi mdi-file-document-outline"></i>
                         <span class="menu-title">Daftar SP3</span>
@@ -28,22 +33,46 @@
                 <?php endif; ?>
 
                 <?php if($this->session->userdata('nama_group') == 'Keuangan'): ?>
-                <li class="nav-item">
+                <li class="nav-item <?= ($menu_aktif == 'jurnalumum') ? 'active' : '' ?>">
                     <a class="nav-link" href="<?= base_url('keuangan/jurnalumum') ?>">
                         <i class="menu-icon mdi mdi-book-open-page-variant"></i>
                         <span class="menu-title">Jurnal Umum</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                
+                <li class="nav-item <?= ($menu_aktif == 'jurnalpendapatan') ? 'active' : '' ?>">
                     <a class="nav-link" href="<?= base_url('keuangan/jurnalpendapatan') ?>">
                         <i class="menu-icon mdi mdi-cash-register"></i>
                         <span class="menu-title">Jurnal Pendapatan</span>
                     </a>
                 </li>
-                <li class="nav-item">
+                
+                <li class="nav-item <?= ($menu_aktif == 'jurnalsiswa') ? 'active' : '' ?>">
+                    <a class="nav-link d-flex align-items-center" href="<?= base_url('keuangan/jurnalsiswa') ?>">
+                        <i class="menu-icon mdi mdi-wallet"></i>
+                        <span class="menu-title" style="white-space: normal; line-height: 1.2; display: inline-block;">
+                            Jurnal Pendapatan <br>Siswa
+                        </span>
+                    </a>
+                </li>
+                
+                <li class="nav-item <?= ($menu_aktif == 'tunggakan') ? 'active' : '' ?>">
                     <a class="nav-link" href="<?= base_url('keuangan/tunggakan') ?>">
                         <i class="menu-icon mdi mdi-alert-circle-outline text-danger"></i>
                         <span class="menu-title">Tunggakan</span>
+                    </a>
+                </li>
+
+                <li class="nav-item <?= ($menu_aktif == 'databpjs') ? 'active' : '' ?>">
+                    <a class="nav-link" href="<?= base_url('keuangan/databpjs') ?>">
+                        <i class="menu-icon mdi mdi-shield-account text-info"></i>
+                        <span class="menu-title">Data BPJS Pegawai</span>
+                    </a>
+                </li>
+                <li class="nav-item <?= ($menu_aktif == 'databsi') ? 'active' : '' ?>">
+                    <a class="nav-link" href="<?= base_url('keuangan/databsi') ?>">
+                        <i class="menu-icon mdi mdi-bank text-success"></i>
+                        <span class="menu-title">Data Tagihan BSI</span>
                     </a>
                 </li>
                 <?php endif; ?>

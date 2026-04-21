@@ -126,18 +126,61 @@
                 }
             ],
             "language": { "search": "", "searchPlaceholder": "Cari data..." },
-            "ajax": {
-                "url": "<?= base_url('keuangan/ajax_tunggakan') ?>",
-                "type": "POST",
-                "data": function ( d ) { 
-                    d.tgl_awal = $('#tgl_awal').val(); 
-                    d.tgl_akhir = $('#tgl_akhir').val(); 
+            
+            // HACK AJAX PAKE SESSION STORAGE
+            "ajax": function (data, callback, settings) {
+                let tgl_awal = $('#tgl_awal').val();
+                let tgl_akhir = $('#tgl_akhir').val();
+                
+                // Bikin kunci unik berdasarkan tanggal
+                let cacheKey = 'cache_tunggakan_' + tgl_awal + '_' + tgl_akhir;
+
+                // Cek data di memory browser
+                let cachedData = sessionStorage.getItem(cacheKey);
+
+                if (cachedData) {
+                    console.log("Ambil data dari Cache Browser");
+                    callback(JSON.parse(cachedData));
+                } else {
+                    console.log("Ambil data dari Server Database");
+                    $.ajax({
+                        url: "<?= base_url('keuangan/ajax_tunggakan') ?>",
+                        type: "POST",
+                        data: {
+                            tgl_awal: tgl_awal,
+                            tgl_akhir: tgl_akhir
+                        },
+                        success: function(response) {
+                            let parsedResponse = JSON.parse(response);
+                            // Simpan ke memory browser buat next time
+                            sessionStorage.setItem(cacheKey, JSON.stringify(parsedResponse));
+                            callback(parsedResponse);
+                        }
+                    });
                 }
             }
         });
 
-        $('#btn-filter').click(function(){ table.ajax.reload(); });
+        // ACTION TOMBOL FILTER
+        $('#btn-filter').click(function(){ 
+            let tgl_awal = $('#tgl_awal').val();
+            let tgl_akhir = $('#tgl_akhir').val();
+            
+            // Hapus cache untuk tanggal ini biar narik data paling fresh
+            sessionStorage.removeItem('cache_tunggakan_' + tgl_awal + '_' + tgl_akhir);
+            
+            table.ajax.reload(); 
+        });
+
+        // ACTION TOMBOL RESET
         $('#btn-reset').click(function(){
+            // Hapus SEMUA cache tunggakan yang ada di browser
+            Object.keys(sessionStorage).forEach(function(key){
+               if(key.startsWith('cache_tunggakan_')) {
+                   sessionStorage.removeItem(key);
+               }
+            });
+
             dpAwal.selectDate("<?= $default_awal ?>");
             dpAkhir.selectDate("<?= $default_akhir ?>");
             table.ajax.reload();

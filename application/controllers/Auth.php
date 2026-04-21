@@ -13,7 +13,7 @@ class Auth extends CI_Controller {
             if ($this->session->userdata('nama_group') == 'Pengadaan') {
                 redirect('pengadaan/dashboard'); 
             } else {
-                redirect('keuangan'); 
+                redirect('keuangan/dashboard'); 
             }
         }
         $this->load->view('v_login');

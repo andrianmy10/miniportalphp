@@ -18,3 +18,6 @@ $route['keuangan/dashboard']       = 'Keuangan/viewDashboard';
 $route['keuangan/jurnalumum']      = 'Keuangan/jurnalUmum';
 $route['keuangan/jurnalpendapatan']= 'Keuangan/jurnalPendapatan';
 $route['keuangan/tunggakan']       = 'Keuangan/tunggakan';
+$route['keuangan/databpjs']        = 'Keuangan/dataBpjs';
+$route['keuangan/jurnalsiswa'] = 'Keuangan/jurnalSiswa';
+$route['keuangan/databsi'] = 'Keuangan/dataBsi';
