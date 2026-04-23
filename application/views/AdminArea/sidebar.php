@@ -24,6 +24,49 @@
                 <li class="nav-item nav-category" style="margin-top: 10px;">Menu Utama</li>
 
                 <?php if($this->session->userdata('nama_group') == 'Pengadaan'): ?>
+
+                <li class="nav-item <?= ($menu_aktif == 'kodebarang') ? 'active' : '' ?>">
+                    <a class="nav-link" href="<?= base_url('pengadaan/kodebarang') ?>">
+                        <i class="menu-icon mdi mdi-barcode-scan"></i>
+                        <span class="menu-title">Data Kode Barang</span>
+                    </a>
+                </li>
+
+                <li class="nav-item <?= ($menu_aktif == 'stokgudang') ? 'active' : '' ?>">
+                    <a class="nav-link" href="<?= base_url('pengadaan/stokgudang') ?>">
+                        <i class="menu-icon mdi mdi-package-variant-closed"></i>
+                        <span class="menu-title">Data Stok Gudang</span>
+                    </a>
+                </li>
+
+                <li class="nav-item <?= ($menu_aktif == 'dataumumspb') ? 'active' : '' ?>">
+                    <a class="nav-link" href="<?= base_url('pengadaan/dataumumspb') ?>">
+                        <i class="menu-icon mdi mdi-file-document-box-multiple"></i>
+                        <span class="menu-title">Data Umum SPB</span>
+                    </a>
+                </li>
+
+                <li class="nav-item <?= ($menu_aktif == 'dokevalbakp') ? 'active' : '' ?>">
+                    <a class="nav-link" href="<?= base_url('pengadaan/dokevalbakp') ?>">
+                        <i class="menu-icon mdi mdi-clipboard-text"></i>
+                        <span class="menu-title">Dokumen Eval & BAKP</span>
+                    </a>
+                </li>
+
+                <li class="nav-item <?= ($menu_aktif == 'databapb') ? 'active' : '' ?>">
+                    <a class="nav-link" href="<?= base_url('pengadaan/databapb') ?>">
+                        <i class="menu-icon mdi mdi-clipboard-check"></i>
+                        <span class="menu-title">Data BAPB</span>
+                    </a>
+                </li>
+
+                <li class="nav-item <?= ($menu_aktif == 'databpm') ? 'active' : '' ?>">
+                    <a class="nav-link" href="<?= base_url('pengadaan/databpm') ?>">
+                        <i class="menu-icon mdi mdi-truck-delivery"></i>
+                        <span class="menu-title">Data BPM</span>
+                    </a>
+                </li>
+
                 <li class="nav-item <?= ($menu_aktif == 'sp3') ? 'active' : '' ?>">
                     <a class="nav-link" href="<?= base_url('pengadaan/sp3') ?>">
                         <i class="menu-icon mdi mdi-file-document-outline"></i>

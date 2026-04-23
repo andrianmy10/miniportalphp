@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="<?= base_url('assets/css/style.css?v=' . time()) ?>">
+
 <div class="row fade-in-up">
     <div class="col-sm-12">
         <hr class="mt-0 mb-3 custom-hr">
@@ -34,7 +36,7 @@
 </div>
 
 <!-- TABEL DATA -->
-<div class="card-sp3 fade-in-up delay-2" style="position: relative; z-index: 1; min-height: 400px;">
+<div class="card-sp3 fade-in-up delay-2" style="position: relative; z-index: 1; min-height: 400px; overflow: hidden !important;">
     <div class="table-responsive pt-2" style="overflow-x: visible;">
         <table id="tableBpjs" class="table table-hover display nowrap" style="width:100%">
             <thead>
@@ -81,7 +83,7 @@
         }
 
         var table = $('#tableBpjs').DataTable({
-            "processing": true,
+            "processing": true, // Kunci buat mancing CSS Progress Bar
             "serverSide": false,
             "scrollX": true,
             "order": [[ 2, "asc" ]], // Urut by Satminkal
@@ -132,7 +134,8 @@
             ],
             "language": { 
                 "search": "", 
-                "searchPlaceholder": "Cari NIP, Nama, dll..." 
+                "searchPlaceholder": "Cari NIP, Nama, dll...",
+                "processing": "" // Kosongin biar tulisan default mati, sisa animasinya doang
             },
             // HACK AJAX PAKE SESSION STORAGE
             "ajax": function (data, callback, settings) {

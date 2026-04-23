@@ -1,0 +1,68 @@
+/* ========================================== */
+/* NATIVE TOP PROGRESS BAR (NEMPEL ATAP CARD) */
+/* ========================================== */
+
+/* Pastikan Card yang bungkus tabel punya posisi relative */
+.card-sp3 {
+    position: relative !important;
+    overflow: hidden !important; /* Biar ujung lengkung progress bar gak keluar jalur */
+}
+
+/* Biarkan pembungkus DataTables normal aja */
+div.dataTables_wrapper {
+    position: static !important; /* Paksa balik ke static biar loading bar bisa tembus ke atas card */
+}
+
+/* Sulap kotak processing bawaan jadi garis di pucuk Atap Card */
+div.dataTables_wrapper div.dataTables_processing {
+    position: absolute !important;
+    /* Pindah ke atap Card (card-sp3) */
+    top: 0 !important; 
+    left: 0 !important;
+    width: 100% !important;
+    height: 3px !important; /* Ketebalan garis progress bar */
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    z-index: 9999 !important; /* Taruh paling depan biar gak ketutup garis lain */
+    color: transparent !important; /* Sembunyiin tulisan bawaan */
+}
+
+/* Bikin animasi garis lari-lari (Meler kayak YouTube) */
+div.dataTables_wrapper div.dataTables_processing::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #0d6efd; /* Warna Biru Light Mode */
+    animation: dt-loading-bar 1.5s infinite linear;
+    transform-origin: 0% 50%;
+}
+
+/* Dark Mode nyesuain jadi warna Putih nyala */
+body.dark-mode div.dataTables_wrapper div.dataTables_processing::before,
+body[data-theme="dark"] div.dataTables_wrapper div.dataTables_processing::before {
+    background-color: #ffffff;
+    box-shadow: 0 0 8px rgba(255,255,255,0.6);
+}
+
+@keyframes dt-loading-bar {
+    0% { transform: translateX(-100%) scaleX(0.2); }
+    50% { transform: translateX(0%) scaleX(0.5); }
+    100% { transform: translateX(100%) scaleX(1); }
+}
+
+/* Bunuh semua isi (teks/icon 3 titik) di dalam kotak loading bawaan template */
+div.dataTables_wrapper div.dataTables_processing > * {
+    display: none !important;
+}
+
+/* Bunuh juga kalau 3 titiknya dibikin pake elemen ::after dari template */
+div.dataTables_wrapper div.dataTables_processing::after {
+    display: none !important;
+    content: none !important;
+}

@@ -4,6 +4,9 @@
     $default_akhir = date('Y-m-d');
 ?>
 
+<!-- Panggil CSS sakti dengan anti-cache -->
+<link rel="stylesheet" href="<?= base_url('assets/css/style.css?v=' . time()) ?>">
+
 <div class="row fade-in-up">
     <div class="col-sm-12">
         <hr class="mt-0 mb-3 custom-hr">
@@ -45,7 +48,8 @@
     </div>
 </div>
 
-<div class="card-sp3 fade-in-up delay-2" style="position: relative; z-index: 1; min-height: 400px;">
+<!-- Tambahin overflow: hidden !important; biar Progress Bar-nya nempel mulus di plafon card -->
+<div class="card-sp3 fade-in-up delay-2" style="position: relative; z-index: 1; min-height: 400px; overflow: hidden !important;">
     <div class="table-responsive pt-2" style="overflow-x: visible;">
         <table id="tableSp3" class="table table-hover display nowrap" style="width:100%">
             <thead>
@@ -80,7 +84,7 @@
         function getExportFileName() { return 'Daftar SP3 ' + $('#tgl_awal').val() + ' sd ' + $('#tgl_akhir').val(); }
 
         var table = $('#tableSp3').DataTable({
-            "processing": true,
+            "processing": true, // Kunci mancing CSS Progress Bar
             "serverSide": false,
             "scrollX": true,
             "order": [[ 4, "asc" ]], 
@@ -89,9 +93,12 @@
                 { 
                     "data": 0, 
                     "render": function(data, type, row) {
-                        let encodedNo = encodeURIComponent(data);
-                        let urlBirt = `https://birt.asihputera.or.id:9999/birt/frameset?__report=PengadaanSP3.rptdesign&Group=manajemen&Departemen=MI%20ASIH%20PUTERA&NoSP3=${encodedNo}`;
-                        return `<a href="${urlBirt}" target="_blank" class="btn-link-sp3" title="Buka Laporan">${data} <i class="fa-solid fa-arrow-up-right-from-square fa-xs ms-1"></i></a>`;
+                        if (type === 'display' && data) {
+                            let encodedNo = encodeURIComponent(data);
+                            let urlBirt = `https://birt.asihputera.or.id:9999/birt/frameset?__report=PengadaanSP3.rptdesign&Group=manajemen&Departemen=MI%20ASIH%20PUTERA&NoSP3=${encodedNo}`;
+                            return `<a href="${urlBirt}" target="_blank" class="btn-link-sp3" title="Buka Laporan">${data} <i class="fa-solid fa-arrow-up-right-from-square fa-xs ms-1"></i></a>`;
+                        }
+                        return data;
                     }
                 },
                 { "data": 1 }, { "data": 2 }, { "data": 3 }, { "data": 4 }
@@ -100,43 +107,76 @@
                 { extend: 'excelHtml5', filename: getExportFileName, text: '<i class="fa-solid fa-file-excel me-2"></i> Excel', className: 'btn btn-sm btn-success fw-bold me-2' },
                 { extend: 'pdfHtml5', filename: getExportFileName, orientation: 'landscape', pageSize: 'A4', text: '<i class="fa-solid fa-file-pdf me-2"></i> PDF', className: 'btn btn-sm btn-danger fw-bold' }
             ],
-            "language": { "search": "", "searchPlaceholder": "Pencarian cepat..." },
-            "ajax": {
-                "url": "<?= base_url('pengadaan/ajax_list_sp3') ?>",
-                "type": "POST",
-                "data": function ( d ) { d.tgl_awal = $('#tgl_awal').val(); d.tgl_akhir = $('#tgl_akhir').val(); }
+            "language": { 
+                "search": "", 
+                "searchPlaceholder": "Pencarian cepat...",
+                "processing": "" // Kosongin biar meler doang garisnya tanpa teks
             },
-            "initComplete": function(settings, json) {
-                this.api().column(1).every(function() {
-                    var uniqueData = this.data().unique().sort().toArray();
-                    var choiceOptions = [{ value: '', label: 'Semua Unit', selected: true }];
-                    uniqueData.forEach(function(item) { choiceOptions.push({ value: item, label: item }); });
-                    unitSelect.clearChoices();
-                    unitSelect.setChoices(choiceOptions, 'value', 'label', true);
-                });
+            
+            // HACK AJAX PAKE SESSION STORAGE CACHE
+            "ajax": function (data, callback, settings) {
+                let tgl_awal = $('#tgl_awal').val();
+                let tgl_akhir = $('#tgl_akhir').val();
+                let cacheKey = 'cache_datasp3_' + tgl_awal + '_' + tgl_akhir;
+                let cachedData = sessionStorage.getItem(cacheKey);
+
+                if (cachedData) {
+                    console.log("Ambil data SP3 dari Cache Browser");
+                    let parsedData = JSON.parse(cachedData);
+                    callback(parsedData);
+                    updateUnitFilter(parsedData.data);
+                } else {
+                    console.log("Ambil data SP3 dari Server");
+                    $.ajax({
+                        url: "<?= base_url('pengadaan/ajax_list_sp3') ?>",
+                        type: "POST",
+                        data: { tgl_awal: tgl_awal, tgl_akhir: tgl_akhir },
+                        success: function(response) {
+                            let parsedResponse = JSON.parse(response);
+                            sessionStorage.setItem(cacheKey, JSON.stringify(parsedResponse));
+                            callback(parsedResponse);
+                            updateUnitFilter(parsedResponse.data);
+                        }
+                    });
+                }
             }
         });
 
+        // Fungsi buat update pilihan Unit Kerja di dropdown secara dinamis
+        function updateUnitFilter(dataList) {
+            if(!dataList) return;
+            var uniqueUnits = [...new Set(dataList.map(item => item[1]))].sort();
+            var choiceOptions = [{ value: '', label: 'Semua Unit', selected: true }];
+            uniqueUnits.forEach(function(item) {
+                if(item) choiceOptions.push({ value: item, label: item });
+            });
+            unitSelect.clearChoices();
+            unitSelect.setChoices(choiceOptions, 'value', 'label', true);
+        }
+
         setTimeout(function() { $('.dt-button').removeClass('dt-button'); }, 100);
 
+        // Filter Dropdown Unit Kerja
         document.getElementById('filter_unit').addEventListener('change', function(e) {
             var val = $.fn.dataTable.util.escapeRegex(e.target.value);
             table.column(1).search(val ? '^' + val + '$' : '', true, false).draw();
         });
 
+        // Tombol Filter
         $('#btn-filter').click(function(){ 
-            table.ajax.reload(function() {
-                table.column(1).every(function() {
-                    var uniqueData = this.data().unique().sort().toArray();
-                    var choiceOptions = [{ value: '', label: 'Semua Unit', selected: true }];
-                    uniqueData.forEach(function(item) { choiceOptions.push({ value: item, label: item }); });
-                    unitSelect.clearChoices();
-                    unitSelect.setChoices(choiceOptions, 'value', 'label', true);
-                });
-            }); 
+            let tgl_awal = $('#tgl_awal').val();
+            let tgl_akhir = $('#tgl_akhir').val();
+            sessionStorage.removeItem('cache_datasp3_' + tgl_awal + '_' + tgl_akhir);
+            table.ajax.reload(); 
         });
 
+        // Tombol Reset
         $('#btn-reset').click(function(){
+            Object.keys(sessionStorage).forEach(function(key){
+               if(key.startsWith('cache_datasp3_')) {
+                   sessionStorage.removeItem(key);
+               }
+            });
             dpAwal.selectDate("<?= $default_awal ?>");
             dpAkhir.selectDate("<?= $default_akhir ?>");
             unitSelect.setChoiceByValue('');

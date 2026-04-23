@@ -6,6 +6,8 @@
     $default_berlaku = date('Y-m-t'); // Akhir bulan ini
 ?>
 
+<link rel="stylesheet" href="<?= base_url('assets/css/style.css?v=' . time()) ?>">
+
 <div class="row fade-in-up">
     <div class="col-sm-12">
         <hr class="mt-0 mb-3 custom-hr">
@@ -17,7 +19,6 @@
 
 <div class="card-sp3 fade-in-up delay-1" style="position: relative; z-index: 99; overflow: visible !important;">
     <div class="row align-items-end g-3">
-        <!-- Filter Data Database -->
         <div class="col-lg-3 col-md-6">
             <label class="fw-bold small mb-1"><i class="fa-regular fa-calendar-days me-1"></i> Data Tgl Awal</label>
             <input type="text" id="tgl_awal" class="form-control modern-input" autocomplete="off">
@@ -27,7 +28,6 @@
             <input type="text" id="tgl_akhir" class="form-control modern-input" autocomplete="off">
         </div>
 
-        <!-- Filter Parameter Bank -->
         <div class="col-lg-3 col-md-6">
             <label class="fw-bold small mb-1 text-primary"><i class="fa-solid fa-file-invoice me-1"></i> Set Tgl Tagihan</label>
             <input type="text" id="tgl_tagihan" class="form-control modern-input border-primary" autocomplete="off">
@@ -50,7 +50,7 @@
     </div>
 </div>
 
-<div class="card-sp3 fade-in-up delay-2" style="position: relative; z-index: 1; min-height: 400px;">
+<div class="card-sp3 fade-in-up delay-2" style="position: relative; z-index: 1; min-height: 400px; overflow: hidden !important;">
     <div class="table-responsive pt-2" style="overflow-x: visible;">
         <table id="tableBsi" class="table table-hover display nowrap" style="width:100%">
             <thead>
@@ -113,7 +113,7 @@
         ];
 
         var table = $('#tableBsi').DataTable({
-            "processing": true,
+            "processing": true, // Kunci buat mancing CSS Progress Bar
             "serverSide": false,
             "scrollX": true,
             "order": [[ 3, "asc" ]], // Sort berdasarkan Nama
@@ -144,7 +144,11 @@
                     }
                 }
             ],
-            "language": { "search": "", "searchPlaceholder": "Cari data..." },
+            "language": { 
+                "search": "", 
+                "searchPlaceholder": "Cari data...",
+                "processing": "" // Kosongin biar tulisan default mati, sisa animasinya doang
+            },
             // HACK AJAX PAKE SESSION STORAGE
             "ajax": function (data, callback, settings) {
                 let tgl_awal    = $('#tgl_awal').val();

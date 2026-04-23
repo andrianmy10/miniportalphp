@@ -3,6 +3,8 @@
     $default_akhir = date('Y-m-d');
 ?>
 
+<link rel="stylesheet" href="<?= base_url('assets/css/style.css?v=' . time()) ?>">
+
 <div class="row fade-in-up">
     <div class="col-sm-12">
         <hr class="mt-0 mb-3 custom-hr">
@@ -44,7 +46,8 @@
     </div>
 </div>
 
-<div class="card-sp3 fade-in-up delay-2" style="position: relative; z-index: 1; min-height: 400px;">
+<!-- Tambahin overflow: hidden !important; biar Progress Bar-nya gak keluar jalur -->
+<div class="card-sp3 fade-in-up delay-2" style="position: relative; z-index: 1; min-height: 400px; overflow: hidden !important;">
     <div class="table-responsive pt-2" style="overflow-x: visible;">
         <table id="tablePendapatanSiswa" class="table table-hover display nowrap" style="width:100%">
             <thead>
@@ -92,7 +95,7 @@
         }
 
         var table = $('#tablePendapatanSiswa').DataTable({
-            "processing": true,
+            "processing": true, // Kunci mancing CSS Progress Bar
             "serverSide": false,
             "scrollX": true,
             "order": [[ 8, "asc" ]], // Urut berdasarkan tanggal (index 8)
@@ -122,7 +125,6 @@
                     "data": 8, // Tanggal
                     "render": function(data, type) {
                         if (type === 'display' && data) {
-                            // Antisipasi kalau data dari DB bentuknya DATETIME (ada jamnya)
                             let dateOnly = data.split(' ')[0]; 
                             const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
                             let parts = dateOnly.split('-');
@@ -162,15 +164,44 @@
             "language": { 
                 "search": "", 
                 "searchPlaceholder": "Cari data...",
-                "emptyTable": "Silahkan pilih Siswa lalu klik tombol Cari untuk menampilkan data." // Pesan custom saat kosong
+                "emptyTable": "Silahkan pilih Siswa lalu klik tombol Cari untuk menampilkan data.",
+                "processing": "" // Sembunyiin teks bawaan, biar meler doang
             },
-            "ajax": {
-                "url": "<?= base_url('keuangan/ajax_jurnal_siswa') ?>",
-                "type": "POST",
-                "data": function ( d ) { 
-                    d.nis = $('#filter_nis').val();
-                    d.tgl_awal = $('#tgl_awal').val();
-                    d.tgl_akhir = $('#tgl_akhir').val();
+            
+            // HACK AJAX + SESSION STORAGE CACHE BIAR NGEBUT
+            "ajax": function (data, callback, settings) {
+                let nis = $('#filter_nis').val();
+                let tgl_awal = $('#tgl_awal').val();
+                let tgl_akhir = $('#tgl_akhir').val();
+                
+                // Kalau NIS kosong, langsung return array kosong (Biar nggak loading meler mulu)
+                if(!nis) {
+                    callback({data: []});
+                    return;
+                }
+
+                let cacheKey = 'cache_jurnalsiswa_' + nis + '_' + tgl_awal + '_' + tgl_akhir;
+                let cachedData = sessionStorage.getItem(cacheKey);
+
+                if (cachedData) {
+                    console.log("Ambil data Jurnal Siswa dari Cache Browser");
+                    callback(JSON.parse(cachedData));
+                } else {
+                    console.log("Ambil data Jurnal Siswa dari Server");
+                    $.ajax({
+                        url: "<?= base_url('keuangan/ajax_jurnal_siswa') ?>",
+                        type: "POST",
+                        data: {
+                            nis: nis,
+                            tgl_awal: tgl_awal,
+                            tgl_akhir: tgl_akhir
+                        },
+                        success: function(response) {
+                            let parsedResponse = JSON.parse(response);
+                            sessionStorage.setItem(cacheKey, JSON.stringify(parsedResponse));
+                            callback(parsedResponse);
+                        }
+                    });
                 }
             }
         });
@@ -180,6 +211,13 @@
                 alert('Pilih siswa terlebih dahulu!');
                 return;
             }
+            
+            // Hapus cache spesifik ini kalau difilter ulang
+            let nis = $('#filter_nis').val();
+            let tgl_awal = $('#tgl_awal').val();
+            let tgl_akhir = $('#tgl_akhir').val();
+            sessionStorage.removeItem('cache_jurnalsiswa_' + nis + '_' + tgl_awal + '_' + tgl_akhir);
+            
             table.ajax.reload(); 
         });
 

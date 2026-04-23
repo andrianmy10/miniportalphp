@@ -3,6 +3,8 @@
     $default_akhir = date('Y-m-d');
 ?>
 
+<link rel="stylesheet" href="<?= base_url('assets/css/style.css?v=' . time()) ?>">
+
 <div class="row fade-in-up">
     <div class="col-sm-12">
         <hr class="mt-0 mb-3 custom-hr">
@@ -37,7 +39,7 @@
     </div>
 </div>
 
-<div class="card-sp3 fade-in-up delay-2" style="position: relative; z-index: 1; min-height: 400px;">
+<div class="card-sp3 fade-in-up delay-2" style="position: relative; z-index: 1; min-height: 400px; overflow: hidden !important;">
     <div class="table-responsive pt-2" style="overflow-x: visible;">
         <table id="tablePendapatan" class="table table-hover display nowrap" style="width:100%">
             <thead>
@@ -82,7 +84,7 @@
         function getFileName() { return 'Jurnal Pendapatan ' + $('#tgl_awal').val() + ' sd ' + $('#tgl_akhir').val(); }
 
         var table = $('#tablePendapatan').DataTable({
-            "processing": true,
+            "processing": true, // Kunci buat mancing CSS Progress Bar
             "serverSide": false,
             "scrollX": true,
             "order": [[ 11, "asc" ]], // Default sort berdasarkan Tanggal (index 11)
@@ -162,7 +164,11 @@
                     }
                 }
             ],
-            "language": { "search": "", "searchPlaceholder": "Cari data..." },
+            "language": { 
+                "search": "", 
+                "searchPlaceholder": "Cari data...",
+                "processing": "" // Kosongin biar tulisan default mati, sisa animasinya doang
+            },
             
             // HACK AJAX PAKE SESSION STORAGE
             "ajax": function (data, callback, settings) {

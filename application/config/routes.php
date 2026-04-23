@@ -10,6 +10,12 @@ $route['translate_uri_dashes'] = FALSE;
 // ===================================
 $route['pengadaan/dashboard'] = 'Pengadaan/viewDashboard';
 $route['pengadaan/sp3'] = 'Pengadaan/index';
+$route['pengadaan/kodebarang'] = 'Pengadaan/kodeBarang';
+$route['pengadaan/stokgudang'] = 'Pengadaan/stokGudang';
+$route['pengadaan/dataumumspb'] = 'Pengadaan/dataUmumSpb';
+$route['pengadaan/dokevalbakp'] = 'Pengadaan/dokEvalBakp';
+$route['pengadaan/databapb'] = 'Pengadaan/dataBapb';
+$route['pengadaan/databpm'] = 'Pengadaan/dataBpm';
 
 // ===================================
 // CUSTOM ROUTES KEUANGAN

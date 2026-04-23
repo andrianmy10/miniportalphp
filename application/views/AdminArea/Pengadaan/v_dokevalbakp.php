@@ -1,6 +1,7 @@
 <?php 
-    // Default Tanggal (Tanggal 1 bulan ini s/d Hari ini)
-    $default_awal = date('Y-m-01');
+    // OTOMATIS: Tanggal 1 Januari di tahun berjalan
+    $default_awal = date('Y-01-01');
+    // OTOMATIS: Tanggal hari ini
     $default_akhir = date('Y-m-d');
 ?>
 
@@ -10,7 +11,7 @@
     <div class="col-sm-12">
         <hr class="mt-0 mb-3 custom-hr">
         <div class="pb-2 mb-3">
-            <h4 class="mb-0 fw-bold" style="font-size: 18px;">Data Jurnal Umum</h4>
+            <h4 class="mb-0 fw-bold" style="font-size: 18px;">Dokumen Eval & BAKP</h4>
         </div>
     </div>
 </div>
@@ -30,7 +31,7 @@
         <div class="col-lg-4 col-md-12">
             <div class="d-flex gap-2 w-100">
                 <button id="btn-filter" class="btn btn-primary btn-custom flex-grow-1">
-                    <i class="fa-solid fa-magnifying-glass me-2"></i> Filter
+                    <i class="fa-solid fa-magnifying-glass me-2"></i> Tampilkan
                 </button>
                 <button id="btn-reset" class="btn btn-light btn-custom border flex-grow-1">
                     <i class="fa-solid fa-rotate-right me-2"></i> Reset
@@ -40,24 +41,21 @@
     </div>
 </div>
 
-<!-- Overflow: hidden !important ditambahin ke card tabel -->
+<!-- Overflow hidden !important ditambahin di sini -->
 <div class="card-sp3 fade-in-up delay-2" style="position: relative; z-index: 1; min-height: 400px; overflow: hidden !important;">
     <div class="table-responsive pt-2" style="overflow-x: visible;">
-        <table id="tableJurnal" class="table table-hover display nowrap" style="width:100%">
+        <table id="tableEval" class="table table-hover display nowrap" style="width:100%">
             <thead>
                 <tr>
-                    <th>NO. BUKTI</th>
-                    <th>TANGGAL</th>
-                    <th>KD. PERKIR</th>
-                    <th>URAIAN</th>
-                    <th>DEBET</th>
-                    <th>KREDIT</th>
-                    <th>NO. REFERENSI</th>
-                    <th>NO. FAKTUR</th>
-                    <th>KD. BARANG</th>
-                    <th>KD. NASABAH</th>
-                    <th>KD. PROYEK</th>
+                    <th>NO EVALUASI</th>
+                    <th>NO BAKP</th>
+                    <th>NO SP3</th>
+                    <th>DEPARTEMEN</th>
+                    <th>PEKERJAAN</th>
+                    <th>NAMA PROYEK</th>
+                    <th>TGL EVALUASI</th>
                     <th>KETERANGAN</th>
+                    <th>PENGUSUL</th>
                 </tr>
             </thead>
             <tbody></tbody>
@@ -67,7 +65,6 @@
 
 <script>
     $(document).ready(function() {
-        
         const localeId = {
             days: ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'],
             daysShort: ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'],
@@ -80,81 +77,60 @@
         const dpAwal = new AirDatepicker('#tgl_awal', { locale: localeId, selectedDates: ["<?= $default_awal ?>"], autoClose: true });
         const dpAkhir = new AirDatepicker('#tgl_akhir', { locale: localeId, selectedDates: ["<?= $default_akhir ?>"], autoClose: true });
 
-        function getExportFileName() { return 'Jurnal Umum ' + $('#tgl_awal').val() + ' sd ' + $('#tgl_akhir').val(); }
+        function getFileName() { return 'Dokumen_Eval_BAKP_' + $('#tgl_awal').val() + '_sd_' + $('#tgl_akhir').val(); }
 
-        var table = $('#tableJurnal').DataTable({
-            "processing": true, // Kunci buat mancing CSS Progress Bar
+        var table = $('#tableEval').DataTable({
+            "processing": true, // Kunci mancing CSS Progress Bar
             "serverSide": false,
             "scrollX": true,
-            "order": [[ 1, "asc" ]], // Default sort ASC (tanggal 1 ke atas)
+            "order": [[ 6, "desc" ]], // Default sort by Tgl Evaluasi Terbaru
             "dom": '<"d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3"Bf>rt<"d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 text-muted small"ip>',
             "columns": [
-                { "data": 0 },
                 { 
-                    "data": 1, // Render Tanggal Indonesia (1 September 2025)
+                    "data": 0, 
                     "render": function(data, type, row) {
                         if (type === 'display' && data) {
-                            const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                            let parts = data.split('-');
-                            if (parts.length === 3) {
-                                let hari = parseInt(parts[2], 10);
-                                let bulan = namaBulan[parseInt(parts[1], 10) - 1];
-                                return hari + ' ' + bulan + ' ' + parts[0];
-                            }
+                            // row[1] itu isinya data dari kolom NO BAKP
+                            let noEvaluasi = encodeURIComponent(data);
+                            let noBakp = row[1] ? encodeURIComponent(row[1]) : ''; // Jaga-jaga kalau BAKP-nya kosong
+                            
+                            // URL BIRT sesuai yang lu kasih
+                            let urlBirt = `https://birt.asihputera.or.id:9999/birt/frameset?__report=PengadaanEVALDAN.rptdesign&Group=manajemen&Departemen=MI%20ASIH%20PUTERA&NoEvaluasi=${noEvaluasi}&NoBAKP=${noBakp}`;
+                            
+                            return `<a href="${urlBirt}" target="_blank" class="fw-bold text-primary text-decoration-none" title="Buka Report Evaluasi & BAKP"><i class="fa-solid fa-arrow-up-right-from-square me-1 text-primary"></i> ${data}</a>`;
                         }
-                        return data; // Balikin YYYY-MM-DD buat export & sorting
+                        // Buat export Excel tetep text biasa
+                        return data;
                     }
                 },
+                { "data": 1 },
                 { "data": 2 },
                 { "data": 3 },
-                { 
-                    "data": 4, // Kolom Debet
-                    "render": function(data, type, row) {
-                        if (type === 'display') {
-                            return 'Rp. ' + new Intl.NumberFormat('id-ID').format(data);
-                        }
-                        return data; // Raw buat export
-                    }
-                },
-                { 
-                    "data": 5, // Kolom Kredit
-                    "render": function(data, type, row) {
-                        if (type === 'display') {
-                            return 'Rp. ' + new Intl.NumberFormat('id-ID').format(data);
-                        }
-                        return data; // Raw buat export
-                    }
-                },
-                { "data": 6 },
+                { "data": 4 },
+                { "data": 5 },
+                { "data": 6 }, // Tanggal Evaluasi
                 { "data": 7 },
-                { "data": 8 },
-                { "data": 9 },
-                { "data": 10 },
-                { "data": 11 }
+                { "data": 8 }
             ],
             "buttons": [
                 { 
                     extend: 'excelHtml5', 
-                    filename: getExportFileName, 
+                    filename: getFileName, 
                     text: '<i class="fa-solid fa-file-excel me-2"></i> Excel', 
                     className: 'btn btn-sm btn-success fw-bold me-2',
-                    exportOptions: {
-                        orthogonal: 'export' // Kunci Export Tanpa Rp
-                    }
+                    exportOptions: { orthogonal: 'export' }
                 },
                 { 
                     extend: 'pdfHtml5', 
-                    filename: getExportFileName, 
+                    filename: getFileName, 
                     orientation: 'landscape', 
-                    pageSize: 'LEGAL', // Legal biar 12 kolom ga sesak
+                    pageSize: 'A4', 
                     text: '<i class="fa-solid fa-file-pdf me-2"></i> PDF', 
                     className: 'btn btn-sm btn-danger fw-bold',
-                    exportOptions: {
-                        orthogonal: 'export' // Kunci PDF Tanpa Rp (jika diperlukan)
-                    },
+                    exportOptions: { orthogonal: 'export' },
                     customize: function (doc) {
-                        doc.content.splice(0, 1, { text: 'LAPORAN JURNAL UMUM', fontSize: 16, bold: true, alignment: 'center', color: '#1e3a8a', margin: [0, 0, 0, 5] });
-                        doc.content.splice(1, 0, { text: 'Periode: ' + $('#tgl_awal').val() + ' s/d ' + $('#tgl_akhir').val(), fontSize: 10, alignment: 'center', color: '#64748b', margin: [0, 0, 0, 20] });
+                        doc.content.splice(0, 1, { text: 'DOKUMEN EVALUASI & BAKP', fontSize: 16, bold: true, alignment: 'center', color: '#1e3a8a', margin: [0, 0, 0, 5] });
+                        doc.content.splice(1, 0, { text: 'Periode: ' + $('#tgl_awal').val() + ' s.d ' + $('#tgl_akhir').val(), fontSize: 10, alignment: 'center', margin: [0, 0, 0, 20] });
                         
                         doc.styles.tableHeader.fillColor = '#1e3a8a';
                         doc.styles.tableHeader.color = '#ffffff';
@@ -169,27 +145,26 @@
             ],
             "language": { 
                 "search": "", 
-                "searchPlaceholder": "Pencarian cepat...",
-                "processing": "" // Sembunyiin teks bawaan DataTables
+                "searchPlaceholder": "Cari No Eval, Proyek...",
+                "processing": "" // Sembunyiin teks "Processing..." default DataTables
             },
             
-            // HACK AJAX PAKE SESSION STORAGE
+            // MAGIC CACHE SESSION STORAGE
             "ajax": function (data, callback, settings) {
                 let tgl_awal = $('#tgl_awal').val();
                 let tgl_akhir = $('#tgl_akhir').val();
                 
-                // Bikin kunci unik berdasarkan tanggal
-                let cacheKey = 'cache_jurnalumum_' + tgl_awal + '_' + tgl_akhir;
-
+                // Cache key unik pakai kombinasi tanggal
+                let cacheKey = 'cache_dokevalbakp_' + tgl_awal + '_' + tgl_akhir;
                 let cachedData = sessionStorage.getItem(cacheKey);
 
                 if (cachedData) {
-                    console.log("Ambil data Jurnal Umum dari Cache Browser");
+                    console.log("Ambil data Dok Eval dari Cache Browser");
                     callback(JSON.parse(cachedData));
                 } else {
-                    console.log("Ambil data Jurnal Umum dari Server Database");
+                    console.log("Ambil data Dok Eval dari Server");
                     $.ajax({
-                        url: "<?= base_url('keuangan/ajax_jurnal_umum') ?>",
+                        url: "<?= base_url('pengadaan/ajax_dok_eval_bakp') ?>",
                         type: "POST",
                         data: {
                             tgl_awal: tgl_awal,
@@ -205,29 +180,27 @@
             }
         });
 
-        setTimeout(function() { $('.dt-button').removeClass('dt-button'); }, 100);
-
+        // ACTION TOMBOL FILTER
         $('#btn-filter').click(function(){ 
             let tgl_awal = $('#tgl_awal').val();
             let tgl_akhir = $('#tgl_akhir').val();
-            
-            // Hapus cache untuk tanggal ini biar narik data paling fresh
-            sessionStorage.removeItem('cache_jurnalumum_' + tgl_awal + '_' + tgl_akhir);
-            
+            sessionStorage.removeItem('cache_dokevalbakp_' + tgl_awal + '_' + tgl_akhir);
             table.ajax.reload(); 
         });
 
+        // ACTION TOMBOL RESET
         $('#btn-reset').click(function(){
-            // Hapus SEMUA cache jurnal umum yang ada di browser
             Object.keys(sessionStorage).forEach(function(key){
-               if(key.startsWith('cache_jurnalumum_')) {
+               if(key.startsWith('cache_dokevalbakp_')) {
                    sessionStorage.removeItem(key);
                }
             });
 
             dpAwal.selectDate("<?= $default_awal ?>");
             dpAkhir.selectDate("<?= $default_akhir ?>");
-            table.search('').ajax.reload();
+            table.ajax.reload();
         });
+
+        setTimeout(function() { $('.dt-button').removeClass('dt-button'); }, 100);
     });
 </script>
